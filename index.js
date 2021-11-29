@@ -29,7 +29,14 @@ const express = require('express');
 const http = require('http');
 const app = express();
 const port = process.env.PORT || 3000;
-const publicRun = process.argv[2];
+var lan;
+if (typeof process.argv[2] === 'string' || process.argv[2] instanceof String) {
+    lan = process.argv[2];
+} else {
+    lan = '';
+}
+lan = lan.toLowerCase();
+
 
 app.use(express.static('public'));
 
@@ -42,10 +49,10 @@ app.get('/', (req, res) => {
 });
 
 const server = http.createServer(app);
-(!publicRun == "public") ? server.listen(port) : server.listen(port, '0.0.0.0');
+server.listen(port);
 
 const parser = require('ua-parser-js');
-const { uniqueNamesGenerator, animals, colors } = require('unique-names-generator');
+const { uniqueNamesGenerator, colors, animals, names } = require('unique-names-generator');
 
 class SnapdropServer {
 
@@ -57,7 +64,7 @@ class SnapdropServer {
 
         this._rooms = {};
 
-        console.log('Snapdrop is running on port', port);
+        console.log('node-Snapdrop is running on port', port);
     }
 
     _onConnection(peer) {
@@ -98,9 +105,9 @@ class SnapdropServer {
                 break;
         }
 	
-	var senderIp = "";
-	if (publicRun == "LAN") {
-            senderIp = "LAN";
+	var senderIp = '';
+	if (lan == 'lan') {
+            senderIp = 'LAN';
 	} else {
 	    senderIp = sender.ip;
 	}
@@ -119,8 +126,8 @@ class SnapdropServer {
 
     _joinRoom(peer) {
 	var peerIp = "";
-	if (publicRun == "LAN") {
-            peerIp = "LAN";
+	if (lan == 'lan') {
+            peerIp = 'LAN';
 	} else {
 	    peerIp = peer.ip;
 	}
@@ -156,9 +163,9 @@ class SnapdropServer {
     }
 
     _leaveRoom(peer) {
-	var peerIp = "";
-	if (publicRun == "LAN") {
-	    peerIp = "LAN";
+	var peerIp = '';
+	if (lan == 'lan') {
+	    peerIp = 'LAN';
 	} else {
 	    peerIp = peer.ip;
 	}
@@ -278,9 +285,9 @@ class Peer {
             deviceName = 'Unknown Device';
 
         const displayName = uniqueNamesGenerator({
-            length: 2,
+            length: 3,
             separator: ' ',
-            dictionaries: [colors, animals],
+            dictionaries: [colors, animals, names],
             style: 'capital',
             seed: this.id.hashCode()
         })
