@@ -1,0 +1,52 @@
+#!/bin/sh
+#
+# script to startup / shutdown node-snapdrop
+#
+progname=$(/usr/bin/basename $0)
+pidfile="/var/run/${progname}.pid"
+logfile="/var/log/${progname}.log"
+appdir="/home/www/node-snapdrop"
+runasid="www"
+cat="/bin/cat"
+node="/usr/local/bin/node"
+sudo="/usr/local/bin/sudo"
+
+if [ $(/usr/bin/id -u) -ne 0 ]; then
+    echo "Must be run as root."
+    exit 1
+fi
+
+if [ $# -ne 1 ]; then
+    echo "Usage: 2"
+    echo "${progname} [start|stop]"
+    echo ""
+    exit 2
+fi
+
+case $1 in
+    start)
+        if [ -f ${pidfile} ]; then
+            echo "${progname}: already running."
+            exit 4
+        fi
+        cd ${appdir}
+        ${sudo} -u ${runasid} ${node} index.js lan >>${logfile} 2>&1 &
+        echo $! > ${pidfile}
+        break
+    ;;
+    stop)
+        if [ -f ${pidfile} ]; then
+            kill $(${cat} ${pidfile})
+            rm -f ${pidfile}
+        fi
+        break
+    ;;
+    *)
+        echo "Usage: 3"
+        echo "$0 [start|stop]"
+        echo ""
+        exit 3
+        break
+    ;;
+esac
+exit 0

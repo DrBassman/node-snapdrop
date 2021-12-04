@@ -1,0 +1,25 @@
+#!/bin/sh
+
+# PROVIDE: node-snapdrop
+# REQUIRE: apache24
+
+. /etc/rc.subr
+
+name=nodesnapdrop
+rcvar="${name}_enable"
+start_cmd="${name}_start"
+stop_cmd="${name}_stop"
+
+nodesnapdrop_start()
+{
+    /usr/local/sbin/node-snapdrop start
+}
+
+
+nodesnapdrop_stop()
+{
+    /usr/local/sbin/node-snapdrop stop
+}
+
+load_rc_config ${name}
+run_rc_command "$1"
